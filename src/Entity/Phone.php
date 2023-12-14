@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 #[UniqueEntity('name')]
@@ -16,18 +17,24 @@ class Phone
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getPhones", "getPhone"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+
+    #[Groups(["getPhones", "getPhone"])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["getPhone"])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2)]
+    #[Groups(["getPhone"])]
     private ?string $price = null;
 
     #[ORM\OneToMany(mappedBy: 'phone', targetEntity: Picture::class, orphanRemoval: true)]
+    #[Groups(["getPhone"])]
     private Collection $pictures;
 
     public function __construct()
