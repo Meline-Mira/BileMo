@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ClientUserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClientUserRepository::class)]
 class ClientUser
@@ -17,18 +18,26 @@ class ClientUser
 
     #[ORM\Column(length: 100)]
     #[Groups(["getClient"])]
+    #[Assert\NotBlank(message: "Le prénom du client est obligatoire")]
+    #[Assert\Length(min: 1, max: 100, minMessage: "Le prénom doit faire au moins {{ limit }} caractères", maxMessage: "Le prénom ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 100)]
     #[Groups(["getClient"])]
+    #[Assert\NotBlank(message: "Le nom du client est obligatoire")]
+    #[Assert\Length(min: 1, max: 100, minMessage: "Le nom doit faire au moins {{ limit }} caractères", maxMessage: "Le nom ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 100)]
     #[Groups(["getClients", "getClient"])]
+    #[Assert\NotBlank(message: "L'email du client est obligatoire")]
+    #[Assert\Length(min: 1, max: 100, minMessage: "L'email' doit faire au moins {{ limit }} caractères", maxMessage: "L'email ne peut pas faire plus de {{ limit }} caractères")]
+    #[Assert\Email(message: "L'email {{ value }} n'est pas un email valide.")]
     private ?string $email = null;
 
     #[ORM\ManyToOne(inversedBy: 'clientUsers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotBlank(message: "L'id de l'utilisateur lié au client est obligatoire")]
     private ?User $user = null;
 
     public function getId(): ?int

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -21,6 +22,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: "Le nom de l'utilisateur est obligatoire")]
+    #[Assert\Length(min: 1, max: 180, minMessage: "Le nom de l'utilisateur doit faire au moins {{ limit }} caractères", maxMessage: "Le nom de l'utilisateur ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $username = null;
 
     #[ORM\Column]
@@ -29,7 +32,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(length: 60)]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire")]
+    #[Assert\Length(min: 1, max: 60, minMessage: "Le mot de passe doit faire au moins {{ limit }} caractères", maxMessage: "Le mot de passe ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $password = null;
 
     #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: ClientUser::class, orphanRemoval: true)]

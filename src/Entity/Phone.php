@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 #[UniqueEntity('name')]
@@ -21,16 +22,19 @@ class Phone
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-
     #[Groups(["getPhones", "getPhone"])]
+    #[Assert\NotBlank(message: "Le nom du téléphone est obligatoire")]
+    #[Assert\Length(min: 1, max: 100, minMessage: "Le nom doit faire au moins {{ limit }} caractères", maxMessage: "Le nom ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(["getPhone"])]
+    #[Assert\NotBlank(message: "La description du téléphone est obligatoire")]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2)]
     #[Groups(["getPhone"])]
+    #[Assert\NotBlank(message: "Le prix du téléphone est obligatoire")]
     private ?string $price = null;
 
     #[ORM\OneToMany(mappedBy: 'phone', targetEntity: Picture::class, orphanRemoval: true)]

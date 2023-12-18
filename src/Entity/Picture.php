@@ -6,6 +6,7 @@ use App\Repository\PictureRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PictureRepository::class)]
 class Picture
@@ -18,14 +19,19 @@ class Picture
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(["getPhone"])]
+    #[Assert\NotBlank(message: "L'url de l'image est obligatoire")]
+    #[Assert\Url(message: "l'url {{ value }} n'est pas une url valide")]
     private ?string $url = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(length: 150)]
     #[Groups(["getPhone"])]
+    #[Assert\NotBlank(message: "La description de l'image est obligatoire")]
+    #[Assert\Length(min: 1, max: 150, minMessage: "La description doit faire au moins {{ limit }} caractères", maxMessage: "La descritpion ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $descritpion = null;
 
     #[ORM\ManyToOne(inversedBy: 'pictures')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotBlank(message: "L'id du téléphone est obligatoire")]
     private ?Phone $phone = null;
 
     public function getId(): ?int

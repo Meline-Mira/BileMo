@@ -12,17 +12,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AddClientUserController extends AbstractController
 {
     #[Route('/api/clients', name: 'add_client', methods: ['POST'])]
     public function index(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager,
-    UrlGeneratorInterface $urlGenerator, UserRepository $userRepository): JsonResponse
+    UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
     {
         $client = $serializer->deserialize($request->getContent(), ClientUser::class, 'json');
         $content = $request->toArray();
         $userId = $content['user'];
         $client->setUser($userRepository->find($userId));
+
+        $errors = $validator->validate($client);
+
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
 
         $entityManager->persist($client);
         $entityManager->flush();
