@@ -33,9 +33,9 @@ class Phone
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2)]
-    #[Groups(["getPhone"])]
+    #[Groups(["getPhones", "getPhone"])]
     #[Assert\NotBlank(message: "Le prix du téléphone est obligatoire")]
-    private ?string $price = null;
+    private ?float $price = null;
 
     #[ORM\OneToMany(mappedBy: 'phone', targetEntity: Picture::class, orphanRemoval: true)]
     #[Groups(["getPhone"])]

@@ -27,13 +27,13 @@ class AppFixtures extends Fixture
             $phone = new Phone;
             $phone->setName('Téléphone numéro ' . $i);
             $phone->setDescription($faker->text());
-            $phone->setPrice(1649.99);
+            $phone->setPrice($this->randomPrice());
             $manager->persist($phone);
 
             for ($j = 0; $j < 5; $j++) {
                 $picture = new Picture;
                 $picture->setUrl($faker->url());
-                $picture->setDescritpion($faker->text($faker->numberBetween(10, 100)));
+                $picture->setDescription($faker->text($faker->numberBetween(10, 100)));
                 $picture->setPhone($phone);
                 $manager->persist($picture);
             }
@@ -56,5 +56,13 @@ class AppFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    private function randomPrice(): float
+    {
+        $numberOne = rand(0, 2);
+        $numberTwo = rand(100, 999);
+        $numberThree =rand(0, 99);
+        return floatval($numberOne . $numberTwo . '.' . $numberThree);
     }
 }

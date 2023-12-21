@@ -20,14 +20,14 @@ class Picture
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(["getPhone"])]
     #[Assert\NotBlank(message: "L'url de l'image est obligatoire")]
-    #[Assert\Url(message: "l'url {{ value }} n'est pas une url valide")]
+    #[Assert\Url(message: "L'url {{ value }} n'est pas une url valide")]
     private ?string $url = null;
 
     #[ORM\Column(length: 150)]
     #[Groups(["getPhone"])]
     #[Assert\NotBlank(message: "La description de l'image est obligatoire")]
     #[Assert\Length(min: 1, max: 150, minMessage: "La description doit faire au moins {{ limit }} caractères", maxMessage: "La descritpion ne peut pas faire plus de {{ limit }} caractères")]
-    private ?string $descritpion = null;
+    private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'pictures')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -51,14 +51,14 @@ class Picture
         return $this;
     }
 
-    public function getDescritpion(): ?string
+    public function getDescription(): ?string
     {
-        return $this->descritpion;
+        return $this->description;
     }
 
-    public function setDescritpion(string $descritpion): static
+    public function setDescription(string $description): static
     {
-        $this->descritpion = $descritpion;
+        $this->description = $description;
 
         return $this;
     }
