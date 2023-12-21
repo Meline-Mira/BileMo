@@ -14,6 +14,10 @@ class DeleteClientUserController extends AbstractController
     #[Route('/api/clients/{id}', name: 'delete_client', methods: ['DELETE'])]
     public function index(ClientUser $clientUser, EntityManagerInterface $entityManager): JsonResponse
     {
+        if ($clientUser->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
+            throw $this->createAccessDeniedException("Vous n'êtes pas autorisé à accéder à ce client.");
+        }
+
         $entityManager->remove($clientUser);
         $entityManager->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);

@@ -21,9 +21,7 @@ class AddClientUserController extends AbstractController
     UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
     {
         $client = $serializer->deserialize($request->getContent(), ClientUser::class, 'json');
-        $content = $request->toArray();
-        $userId = $content['user'];
-        $client->setUser($userRepository->find($userId));
+        $client->setUser($this->getUser());
 
         $errors = $validator->validate($client);
 

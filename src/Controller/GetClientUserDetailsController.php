@@ -14,6 +14,10 @@ class GetClientUserDetailsController extends AbstractController
     #[Route('/api/clients/{id}', name: 'details_client', methods: ['GET'])]
     public function index(ClientUser $clientUser, SerializerInterface $serializer): JsonResponse
     {
+        if ($clientUser->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
+            throw $this->createAccessDeniedException("Vous n'êtes pas autorisé à accéder à ce client.");
+        }
+
         $jsonClient = $serializer->serialize($clientUser, 'json', ['groups' => 'getClient']);
         return new JsonResponse($jsonClient, Response::HTTP_OK, ['accept' => 'json'], true);
     }
