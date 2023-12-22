@@ -21,6 +21,15 @@ class ClientUserRepository extends ServiceEntityRepository
         parent::__construct($registry, ClientUser::class);
     }
 
+    public function findAllWithPagination($user, $page, $limit) {
+        $qb = $this->createQueryBuilder('c')
+            ->andWhere('c.user = :val')
+            ->setParameter('val', $user)
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return ClientUser[] Returns an array of ClientUser objects
 //     */

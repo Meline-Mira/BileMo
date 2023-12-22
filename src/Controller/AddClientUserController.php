@@ -13,12 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class AddClientUserController extends AbstractController
 {
     #[Route('/api/clients', name: 'add_client', methods: ['POST'])]
     public function index(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager,
-    UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
+    UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, ValidatorInterface $validator, TagAwareCacheInterface $cachePool): JsonResponse
     {
         $client = $serializer->deserialize($request->getContent(), ClientUser::class, 'json');
         $client->setUser($this->getUser());
@@ -29,6 +30,7 @@ class AddClientUserController extends AbstractController
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
+        $cachePool->invalidateTags(["clientsCache"]);
         $entityManager->persist($client);
         $entityManager->flush();
 
