@@ -92,4 +92,22 @@ class ClientUser
 
         return $this;
     }
+
+    #[Groups(["getClients"])]
+    public function getLinksClients(): array
+    {
+        return [
+            'self' => ['href' => '/api/clients/'.$this->getId()],
+            'delete' => ['href' => '/api/clients/'.$this->getId()],
+        ];
+    }
+
+    #[Groups(["getClient"])]
+    public function getLinksClient(): array
+    {
+        return [
+            'delete' => ['href' => '/api/clients/'.$this->getId()],
+            'self' => ['href' => '/api/clients'],
+        ];
+    }
 }

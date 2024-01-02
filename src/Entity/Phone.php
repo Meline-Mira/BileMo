@@ -116,4 +116,12 @@ class Phone
 
         return $this;
     }
+
+    #[Groups(["getPhones"])]
+    public function getLinksPhones(): array
+    {
+        return [
+            'self' => ['href' => '/api/phones/'.$this->getId()],
+        ];
+    }
 }
