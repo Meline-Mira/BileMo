@@ -5,7 +5,9 @@ namespace App\Entity;
 use App\Repository\ClientUserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: ClientUserRepository::class)]
 class ClientUser
@@ -93,7 +95,15 @@ class ClientUser
         return $this;
     }
 
+    #[OA\Property(
+        properties: [
+            new OA\Property(property: 'self', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
+            new OA\Property(property: 'delete', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
+        ],
+        type: 'object'
+    )]
     #[Groups(["getClients"])]
+    #[SerializedName('links')]
     public function getLinksClients(): array
     {
         return [
@@ -102,7 +112,15 @@ class ClientUser
         ];
     }
 
+    #[OA\Property(
+        properties: [
+            new OA\Property(property: 'delete', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
+            new OA\Property(property: 'self', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
+        ],
+        type: 'object',
+    )]
     #[Groups(["getClient"])]
+    #[SerializedName('links')]
     public function getLinksClient(): array
     {
         return [

@@ -9,7 +9,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 #[UniqueEntity('name')]
@@ -117,7 +119,12 @@ class Phone
         return $this;
     }
 
+    #[OA\Property(
+        properties: [new OA\Property(property: 'self', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object')],
+        type: 'object'
+    )]
     #[Groups(["getPhones"])]
+    #[SerializedName('links')]
     public function getLinksPhones(): array
     {
         return [
