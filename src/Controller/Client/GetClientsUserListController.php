@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Client;
 
 use App\Entity\ClientUser;
+use App\Entity\User;
 use App\Repository\ClientUserRepository;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use OpenApi\Attributes as OA;
 
 class GetClientsUserListController extends AbstractController
 {
@@ -32,7 +33,7 @@ class GetClientsUserListController extends AbstractController
     )]
     #[OA\Response(
         response: 401,
-        description: "Erreur de connexion",
+        description: 'Erreur de connexion',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -60,16 +61,22 @@ class GetClientsUserListController extends AbstractController
         SerializerInterface $serializer,
         Request $request,
         TagAwareCacheInterface $cachePool
-    ): JsonResponse
-    {
+    ): JsonResponse {
+        /** @var int $page */
         $page = $request->get('page', 1);
+        /** @var int $limit */
         $limit = $request->get('limit', 5);
 
-        $idCache = "getAllClients-" . $page . "-" . $limit;
+        $idCache = 'getAllClients-'.$page.'-'.$limit;
 
         $jsonClientsList = $cachePool->get($idCache, function (ItemInterface $item) use ($clientUserRepository, $page, $limit, $serializer) {
-            $item->tag("clientsCache");
-            $clientsList = $clientUserRepository->findAllWithPagination($this->getUser(), $page, $limit);
+            $item->tag('clientsCache');
+
+            /** @var User $user */
+            $user = $this->getUser();
+
+            $clientsList = $clientUserRepository->findAllWithPagination($user, $page, $limit);
+
             return $serializer->serialize($clientsList, 'json', ['groups' => 'getClients']);
         });
 

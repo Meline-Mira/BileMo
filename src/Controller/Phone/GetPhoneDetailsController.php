@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Phone;
 
 use App\Entity\Phone;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use OpenApi\Attributes as OA;
 
 class GetPhoneDetailsController extends AbstractController
 {
@@ -20,7 +20,7 @@ class GetPhoneDetailsController extends AbstractController
     #[Route('/api/phones/{id}', name: 'details_phone', methods: ['GET'])]
     #[OA\Response(
         response: 200,
-        description: "Retourne les détails du téléphone",
+        description: 'Retourne les détails du téléphone',
         content: new OA\JsonContent(
             type: 'array',
             items: new OA\Items(ref: new Model(type: Phone::class, groups: ['getPhone']))
@@ -28,7 +28,7 @@ class GetPhoneDetailsController extends AbstractController
     )]
     #[OA\Response(
         response: 401,
-        description: "Erreur de connexion",
+        description: 'Erreur de connexion',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -39,7 +39,7 @@ class GetPhoneDetailsController extends AbstractController
     )]
     #[OA\Response(
         response: 404,
-        description: "Objet non trouvé",
+        description: 'Objet non trouvé',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -53,6 +53,7 @@ class GetPhoneDetailsController extends AbstractController
     public function index(Phone $phone, SerializerInterface $serializer): JsonResponse
     {
         $jsonPhone = $serializer->serialize($phone, 'json', ['groups' => 'getPhone']);
+
         return new JsonResponse($jsonPhone, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 }

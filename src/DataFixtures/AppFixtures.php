@@ -12,26 +12,23 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private $userPasswordHasher;
-
-    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+    public function __construct(private UserPasswordHasherInterface $userPasswordHasher)
     {
-        $this->userPasswordHasher = $userPasswordHasher;
     }
 
     public function load(ObjectManager $manager): void
     {
         $faker = \Faker\Factory::create();
 
-        for ($i = 0; $i < 10; $i++) {
-            $phone = new Phone;
-            $phone->setName('Téléphone numéro ' . $i);
+        for ($i = 0; $i < 10; ++$i) {
+            $phone = new Phone();
+            $phone->setName('Téléphone numéro '.$i);
             $phone->setDescription($faker->text());
             $phone->setPrice($this->randomPrice());
             $manager->persist($phone);
 
-            for ($j = 0; $j < 5; $j++) {
-                $picture = new Picture;
+            for ($j = 0; $j < 5; ++$j) {
+                $picture = new Picture();
                 $picture->setUrl($faker->url());
                 $picture->setDescription($faker->text($faker->numberBetween(10, 100)));
                 $picture->setPhone($phone);
@@ -39,14 +36,14 @@ class AppFixtures extends Fixture
             }
         }
 
-        for ($k = 0; $k < 3; $k++) {
-            $user = new User;
+        for ($k = 0; $k < 3; ++$k) {
+            $user = new User();
             $user->setUsername($faker->name());
-            $user->setPassword($this->userPasswordHasher->hashPassword($user, "password"));
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, 'password'));
             $manager->persist($user);
 
-            for ($l = 0; $l < 10; $l++) {
-                $clientUser = new ClientUser;
+            for ($l = 0; $l < 10; ++$l) {
+                $clientUser = new ClientUser();
                 $clientUser->setFirstName($firstName = $faker->firstName());
                 $clientUser->setLastName($lastName = $faker->lastName());
                 $clientUser->setEmail(strtolower($firstName.'.'.$lastName.'@'.$faker->domainName()));
@@ -62,7 +59,8 @@ class AppFixtures extends Fixture
     {
         $numberOne = rand(0, 2);
         $numberTwo = rand(100, 999);
-        $numberThree =rand(0, 99);
-        return floatval($numberOne . $numberTwo . '.' . $numberThree);
+        $numberThree = rand(0, 99);
+
+        return floatval($numberOne.$numberTwo.'.'.$numberThree);
     }
 }

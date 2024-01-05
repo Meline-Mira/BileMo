@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Phone;
 
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,9 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
-use OpenApi\Attributes as OA;
 
 class GetPhonesListController extends AbstractController
 {
@@ -23,16 +23,16 @@ class GetPhonesListController extends AbstractController
      */
     #[Route('/api/phones', name: 'phones', methods: ['GET'])]
     #[OA\Response(
-    response: 200,
-    description: "Retourne la liste des téléphones",
-    content: new OA\JsonContent(
-        type: 'array',
-        items: new OA\Items(ref: new Model(type: Phone::class, groups: ['getPhones']))
+        response: 200,
+        description: 'Retourne la liste des téléphones',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Phone::class, groups: ['getPhones']))
         )
     )]
     #[OA\Response(
         response: 401,
-        description: "Erreur de connexion",
+        description: 'Erreur de connexion',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -41,7 +41,7 @@ class GetPhonesListController extends AbstractController
             ],
         )
     )]
-     #[OA\Parameter(
+    #[OA\Parameter(
         name: 'page',
         in: 'query',
         description: "La page que l'on veut récupérer",
@@ -60,16 +60,18 @@ class GetPhonesListController extends AbstractController
         SerializerInterface $serializer,
         Request $request,
         TagAwareCacheInterface $cachePool
-    ): JsonResponse
-    {
+    ): JsonResponse {
+        /** @var int $page */
         $page = $request->get('page', 1);
+        /** @var int $limit */
         $limit = $request->get('limit', 5);
 
-        $idCache = "getAllPhones-" . $page . "-" . $limit;
+        $idCache = 'getAllPhones-'.$page.'-'.$limit;
 
         $jsonPhonesList = $cachePool->get($idCache, function (ItemInterface $item) use ($phoneRepository, $page, $limit, $serializer) {
-            $item->tag("phonesCache");
+            $item->tag('phonesCache');
             $phonesList = $phoneRepository->findAllWithPagination($page, $limit);
+
             return $serializer->serialize($phonesList, 'json', ['groups' => 'getPhones']);
         });
 

@@ -14,19 +14,19 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getPhone"])]
+    #[Groups(['getPhone'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["getPhone"])]
+    #[Groups(['getPhone'])]
     #[Assert\NotBlank(message: "L'url de l'image est obligatoire")]
     #[Assert\Url(message: "L'url {{ value }} n'est pas une url valide")]
     private ?string $url = null;
 
     #[ORM\Column(length: 150)]
-    #[Groups(["getPhone"])]
+    #[Groups(['getPhone'])]
     #[Assert\NotBlank(message: "La description de l'image est obligatoire")]
-    #[Assert\Length(min: 1, max: 150, minMessage: "La description doit faire au moins {{ limit }} caractères", maxMessage: "La descritpion ne peut pas faire plus de {{ limit }} caractères")]
+    #[Assert\Length(min: 1, max: 150, minMessage: 'La description doit faire au moins {{ limit }} caractères', maxMessage: 'La descritpion ne peut pas faire plus de {{ limit }} caractères')]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'pictures')]

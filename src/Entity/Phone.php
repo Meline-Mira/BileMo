@@ -7,11 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
-use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 #[UniqueEntity('name')]
@@ -20,27 +20,28 @@ class Phone
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getPhones", "getPhone"])]
+    #[Groups(['getPhones', 'getPhone'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(["getPhones", "getPhone"])]
-    #[Assert\NotBlank(message: "Le nom du téléphone est obligatoire")]
-    #[Assert\Length(min: 1, max: 100, minMessage: "Le nom doit faire au moins {{ limit }} caractères", maxMessage: "Le nom ne peut pas faire plus de {{ limit }} caractères")]
+    #[Groups(['getPhones', 'getPhone'])]
+    #[Assert\NotBlank(message: 'Le nom du téléphone est obligatoire')]
+    #[Assert\Length(min: 1, max: 100, minMessage: 'Le nom doit faire au moins {{ limit }} caractères', maxMessage: 'Le nom ne peut pas faire plus de {{ limit }} caractères')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["getPhone"])]
-    #[Assert\NotBlank(message: "La description du téléphone est obligatoire")]
+    #[Groups(['getPhone'])]
+    #[Assert\NotBlank(message: 'La description du téléphone est obligatoire')]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2)]
-    #[Groups(["getPhones", "getPhone"])]
-    #[Assert\NotBlank(message: "Le prix du téléphone est obligatoire")]
+    #[Groups(['getPhones', 'getPhone'])]
+    #[Assert\NotBlank(message: 'Le prix du téléphone est obligatoire')]
     private ?float $price = null;
 
+    /** @var Collection<int, Picture> */
     #[ORM\OneToMany(mappedBy: 'phone', targetEntity: Picture::class, orphanRemoval: true)]
-    #[Groups(["getPhone"])]
+    #[Groups(['getPhone'])]
     private Collection $pictures;
 
     public function __construct()
@@ -77,12 +78,12 @@ class Phone
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(string $price): static
+    public function setPrice(float $price): static
     {
         $this->price = $price;
 
@@ -119,11 +120,12 @@ class Phone
         return $this;
     }
 
+    /** @return array<string, array{href: string}> */
     #[OA\Property(
         properties: [new OA\Property(property: 'self', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object')],
         type: 'object'
     )]
-    #[Groups(["getPhones"])]
+    #[Groups(['getPhones'])]
     #[SerializedName('links')]
     public function getLinksPhones(): array
     {

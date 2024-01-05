@@ -4,10 +4,10 @@ namespace App\Entity;
 
 use App\Repository\ClientUserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
-use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: ClientUserRepository::class)]
 class ClientUser
@@ -15,23 +15,23 @@ class ClientUser
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getClients", "getClient"])]
+    #[Groups(['getClients', 'getClient'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(["getClient"])]
-    #[Assert\NotBlank(message: "Le prénom du client est obligatoire")]
-    #[Assert\Length(min: 1, max: 100, minMessage: "Le prénom doit faire au moins {{ limit }} caractères", maxMessage: "Le prénom ne peut pas faire plus de {{ limit }} caractères")]
+    #[Groups(['getClient'])]
+    #[Assert\NotBlank(message: 'Le prénom du client est obligatoire')]
+    #[Assert\Length(min: 1, max: 100, minMessage: 'Le prénom doit faire au moins {{ limit }} caractères', maxMessage: 'Le prénom ne peut pas faire plus de {{ limit }} caractères')]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(["getClient"])]
-    #[Assert\NotBlank(message: "Le nom du client est obligatoire")]
-    #[Assert\Length(min: 1, max: 100, minMessage: "Le nom doit faire au moins {{ limit }} caractères", maxMessage: "Le nom ne peut pas faire plus de {{ limit }} caractères")]
+    #[Groups(['getClient'])]
+    #[Assert\NotBlank(message: 'Le nom du client est obligatoire')]
+    #[Assert\Length(min: 1, max: 100, minMessage: 'Le nom doit faire au moins {{ limit }} caractères', maxMessage: 'Le nom ne peut pas faire plus de {{ limit }} caractères')]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(["getClients", "getClient"])]
+    #[Groups(['getClients', 'getClient'])]
     #[Assert\NotBlank(message: "L'email du client est obligatoire")]
     #[Assert\Length(min: 1, max: 100, minMessage: "L'email' doit faire au moins {{ limit }} caractères", maxMessage: "L'email ne peut pas faire plus de {{ limit }} caractères")]
     #[Assert\Email(message: "L'email {{ value }} n'est pas un email valide.")]
@@ -95,6 +95,7 @@ class ClientUser
         return $this;
     }
 
+    /** @return array<string, array{href: string}> */
     #[OA\Property(
         properties: [
             new OA\Property(property: 'self', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
@@ -102,7 +103,7 @@ class ClientUser
         ],
         type: 'object'
     )]
-    #[Groups(["getClients"])]
+    #[Groups(['getClients'])]
     #[SerializedName('links')]
     public function getLinksClients(): array
     {
@@ -112,6 +113,7 @@ class ClientUser
         ];
     }
 
+    /** @return array<string, array{href: string}> */
     #[OA\Property(
         properties: [
             new OA\Property(property: 'delete', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
@@ -119,7 +121,7 @@ class ClientUser
         ],
         type: 'object',
     )]
-    #[Groups(["getClient"])]
+    #[Groups(['getClient'])]
     #[SerializedName('links')]
     public function getLinksClient(): array
     {

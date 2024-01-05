@@ -1,34 +1,35 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Client;
 
 use App\Entity\ClientUser;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use OpenApi\Attributes as OA;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-class GetClientUserDetailsController extends AbstractController
+class DeleteClientUserController extends AbstractController
 {
     /**
-     * Cette méthode permet de connaitre les détails d'un client de l'utilisateur.
+     * Cette méthode permet de supprimer un client de l'utilisateur.
      */
+    #[Route('/api/clients/{id}', name: 'delete_client', methods: ['DELETE'])]
     #[Route('/api/clients/{id}', name: 'details_client', methods: ['GET'])]
     #[OA\Response(
-        response: 200,
-        description: "Retourne les détails du client",
+        response: 204,
+        description: 'Pas de contenu',
         content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: ClientUser::class, groups: ['getClient']))
+            type: 'nullable',
         )
     )]
     #[OA\Response(
         response: 401,
-        description: "Erreur de connexion",
+        description: 'Erreur de connexion',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -50,7 +51,7 @@ class GetClientUserDetailsController extends AbstractController
     )]
     #[OA\Response(
         response: 404,
-        description: "Objet non trouvé",
+        description: 'Objet non trouvé',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -61,13 +62,25 @@ class GetClientUserDetailsController extends AbstractController
     )]
     #[OA\Tag(name: 'Clients')]
     #[Security(name: 'Bearer')]
-    public function index(ClientUser $clientUser, SerializerInterface $serializer): JsonResponse
-    {
-        if ($clientUser->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
+    public function index(
+        ClientUser $clientUser,
+        EntityManagerInterface $entityManager,
+        TagAwareCacheInterface $cachePool
+    ): JsonResponse {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        /** @var User $clientUserUser */
+        $clientUserUser = $clientUser->getUser();
+
+        if ($clientUserUser->getUserIdentifier() !== $user->getUserIdentifier()) {
             throw $this->createAccessDeniedException("Vous n'êtes pas autorisé à accéder à ce client.");
         }
 
-        $jsonClient = $serializer->serialize($clientUser, 'json', ['groups' => 'getClient']);
-        return new JsonResponse($jsonClient, Response::HTTP_OK, ['accept' => 'json'], true);
+        $cachePool->invalidateTags(['clientsCache']);
+        $entityManager->remove($clientUser);
+        $entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Client;
 
 use App\Entity\ClientUser;
-use App\Repository\UserRepository;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use OpenApi\Attributes as OA;
 
 class AddClientUserController extends AbstractController
 {
@@ -27,7 +27,7 @@ class AddClientUserController extends AbstractController
     #[Route('/api/clients/{id}', name: 'details_client', methods: ['GET'])]
     #[OA\Response(
         response: 200,
-        description: "Retourne les détails du client",
+        description: 'Retourne les détails du client',
         content: new OA\JsonContent(
             type: 'array',
             items: new OA\Items(ref: new Model(type: ClientUser::class, groups: ['getClient']))
@@ -35,7 +35,7 @@ class AddClientUserController extends AbstractController
     )]
     #[OA\Response(
         response: 400,
-        description: "Requête invalide",
+        description: 'Requête invalide',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -54,7 +54,7 @@ class AddClientUserController extends AbstractController
     )]
     #[OA\Response(
         response: 401,
-        description: "Erreur de connexion",
+        description: 'Erreur de connexion',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -64,7 +64,7 @@ class AddClientUserController extends AbstractController
         )
     )]
     #[OA\RequestBody(
-        description: "Créer un nouvel utilisateur",
+        description: 'Créer un nouvel utilisateur',
         content: new OA\JsonContent(
             type: 'object',
             properties: [
@@ -83,10 +83,12 @@ class AddClientUserController extends AbstractController
         UrlGeneratorInterface $urlGenerator,
         ValidatorInterface $validator,
         TagAwareCacheInterface $cachePool
-    ): JsonResponse
-    {
+    ): JsonResponse {
+        /** @var User $user */
+        $user = $this->getUser();
+
         $client = $serializer->deserialize($request->getContent(), ClientUser::class, 'json');
-        $client->setUser($this->getUser());
+        $client->setUser($user);
 
         $errors = $validator->validate($client);
 
@@ -94,7 +96,7 @@ class AddClientUserController extends AbstractController
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
-        $cachePool->invalidateTags(["clientsCache"]);
+        $cachePool->invalidateTags(['clientsCache']);
         $entityManager->persist($client);
         $entityManager->flush();
 
@@ -102,6 +104,6 @@ class AddClientUserController extends AbstractController
 
         $location = $urlGenerator->generate('details_client', ['id' => $client->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        return new JsonResponse($jsonClient, Response::HTTP_CREATED, ["Location" => $location], true);
+        return new JsonResponse($jsonClient, Response::HTTP_CREATED, ['Location' => $location], true);
     }
 }

@@ -26,6 +26,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(min: 1, max: 180, minMessage: "Le nom de l'utilisateur doit faire au moins {{ limit }} caractères", maxMessage: "Le nom de l'utilisateur ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $username = null;
 
+    /** @var array<string> */
     #[ORM\Column]
     private array $roles = [];
 
@@ -33,10 +34,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column(length: 60)]
-    #[Assert\NotBlank(message: "Le mot de passe est obligatoire")]
-    #[Assert\Length(min: 1, max: 60, minMessage: "Le mot de passe doit faire au moins {{ limit }} caractères", maxMessage: "Le mot de passe ne peut pas faire plus de {{ limit }} caractères")]
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
+    #[Assert\Length(min: 1, max: 60, minMessage: 'Le mot de passe doit faire au moins {{ limit }} caractères', maxMessage: 'Le mot de passe ne peut pas faire plus de {{ limit }} caractères')]
     private ?string $password = null;
 
+    /** @var Collection<int, ClientUser> */
     #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: ClientUser::class, orphanRemoval: true)]
     private Collection $clientUsers;
 
@@ -84,6 +86,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /** @param array<string> $roles */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -94,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
