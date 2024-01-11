@@ -34,25 +34,6 @@ class PutClientUserController extends AbstractController
         )
     )]
     #[OA\Response(
-        response: 400,
-        description: 'Requête invalide',
-        content: new OA\JsonContent(
-            type: 'object',
-            properties: [
-                new OA\Property(property: 'type', type: 'string', example: 'https://symfony.com/errors/validation'),
-                new OA\Property(property: 'title', type: 'string', example: 'Validation Failed'),
-                new OA\Property(property: 'detail', type: 'string'),
-                new OA\Property(property: 'violations', type: 'array', items: new OA\Items(type: 'object', properties: [
-                    new OA\Property(property: 'propertyPath', type: 'string'),
-                    new OA\Property(property: 'title', type: 'string'),
-                    new OA\Property(property: 'template', type: 'string'),
-                    new OA\Property(property: 'parameters', type: 'object'),
-                    new OA\Property(property: 'type', type: 'string'),
-                ])),
-            ],
-        )
-    )]
-    #[OA\Response(
         response: 401,
         description: 'Erreur de connexion',
         content: new OA\JsonContent(
