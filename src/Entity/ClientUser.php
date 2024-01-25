@@ -100,6 +100,7 @@ class ClientUser
         properties: [
             new OA\Property(property: 'self', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
             new OA\Property(property: 'delete', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
+            new OA\Property(property: 'put', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
         ],
         type: 'object'
     )]
@@ -110,6 +111,7 @@ class ClientUser
         return [
             'self' => ['href' => '/api/clients/'.$this->getId()],
             'delete' => ['href' => '/api/clients/'.$this->getId()],
+            'put' => ['href' => '/api/clients/'.$this->getId()],
         ];
     }
 
@@ -117,6 +119,7 @@ class ClientUser
     #[OA\Property(
         properties: [
             new OA\Property(property: 'delete', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
+            new OA\Property(property: 'put', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
             new OA\Property(property: 'self', properties: [new OA\Property(property: 'href', type: 'string')], type: 'object'),
         ],
         type: 'object',
@@ -127,6 +130,7 @@ class ClientUser
     {
         return [
             'delete' => ['href' => '/api/clients/'.$this->getId()],
+            'put' => ['href' => '/api/clients/'.$this->getId()],
             'self' => ['href' => '/api/clients'],
         ];
     }
